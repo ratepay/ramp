@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Laravel\Lumen\Routing\Controller as BaseController;
+use Laravel\Lumen\Routing\Controller as Controller;
 use RatePAY;
 
-class ProfileController extends BaseController
+class ProfileController extends Controller
 {
     /**
      * get ratepay profile

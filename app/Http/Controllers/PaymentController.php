@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Laravel\Lumen\Routing\Controller as BaseController;
+use Laravel\Lumen\Routing\Controller as Controller;
+use App\Http\Controllers\BaseController as BaseController;
 use RatePAY;
 
-class PaymentController extends BaseController
+class PaymentController extends Controller
 {
     var $_trx;
 
@@ -34,8 +35,10 @@ class PaymentController extends BaseController
             $head['Credential']['Securitycode'] = $header['SECURITY'];
         }
 
-        $this->_content = $this->_prepareContent($content);
-        $this->_head = $this->_prepareHead($head);
+        $controller = new BaseController();
+
+        $this->_content = $controller->prepareContent($content);
+        $this->_head = $controller->prepareHead($head);
 
         $this->_rb = new RatePAY\RequestBuilder(true);
 
