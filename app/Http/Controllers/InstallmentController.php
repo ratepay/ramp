@@ -21,47 +21,39 @@ class InstallmentController extends Controller
 
     var $_rb;
 
+    var $_controller;
+
     public function __construct(Request $request)
     {
         $head = $request->json('head');
         $content = $request->json('content');
 
         $header = $request->server->getHeaders();
-        if (!empty($header['PROFILE'])) {
-            $head['Credential']['ProfileId'] = $header['PROFILE'];
-            $head['Credential']['Securitycode'] = $header['SECURITY'];
+        if (!empty($header['PROFILE_ID'])) {
+            $head['SystemId'] = $header['SYSTEM_ID'];
+            $head['Credential']['ProfileId'] = $header['PROFILE_ID'];
+            $head['Credential']['Securitycode'] = $header['SECURITY_CODE'];
         }
 
-        $controller = new BaseController();
+        $this->_controller = new BaseController();
 
-        $this->_head = $controller->prepareHead($head);
-        $this->_content = $controller->prepareContent($content);
+        $this->_head = $this->_controller->prepareHead($head);
+        if (!empty($content)) {
+            $this->_content = $this->_controller->prepareContent($content);
+        }
 
-        $this->_rb = new RatePAY\RequestBuilder(true);
+        $this->_rb = new RatePAY\RequestBuilder($header['SANDBOX']);
     }
 
     /**
      * get configuration
      *
-     * @param Request $request
      * @return mixed
      */
-    public function getConfiguration(Request $request)
+    public function getConfiguration()
     {
-        $header = $request->server->getHeaders();
-        $mbHead = new RatePAY\ModelBuilder();
-
-        $mbHead->setArray([
-            'SystemId' => "Example",
-            'Credential' => [
-                    'ProfileId' => $header['PROFILE'],
-                    'Securitycode' => $header['SECURITY']
-            ]
-        ]);
-
-        $rb = new RatePAY\RequestBuilder(true);
-        $configurationRequest = $rb->callProfileRequest($mbHead);
-        return $configurationRequest->getResult();
+        $configurationRequest = $this->_rb->callConfigurationRequest($this->_head);
+        return $this->_controller->prepareResponse($configurationRequest, 'installment');
     }
 
     /**
@@ -72,7 +64,7 @@ class InstallmentController extends Controller
     public function callCalculationByTime()
     {
         $calculationRequest = $this->_rb->callCalculationRequest($this->_head, $this->_content)->subtype('calculation-by-time');
-        return $calculationRequest->getResult();
+        return $this->_controller->prepareResponse($calculationRequest, 'calculator');
     }
 
     /**
@@ -83,6 +75,6 @@ class InstallmentController extends Controller
     public function callCalculationByRate()
     {
         $calculationRequest = $this->_rb->callCalculationRequest($this->_head, $this->_content)->subtype('calculation-by-time');
-        return $calculationRequest->getResult();
+        return $this->_controller->prepareResponse($calculationRequest, 'calculator');
     }
 }

@@ -19,6 +19,8 @@ class PaymentController extends Controller
 
     var $_options;
 
+    var $_controller;
+
     public function __construct(Request $request, $transactionId = null)
     {
         $this->_options = $request->json('options');
@@ -30,17 +32,18 @@ class PaymentController extends Controller
         }
 
         $header = $request->server->getHeaders();
-        if (!empty($header['PROFILE'])) {
-            $head['Credential']['ProfileId'] = $header['PROFILE'];
-            $head['Credential']['Securitycode'] = $header['SECURITY'];
+        if (!empty($header['PROFILE_ID'])) {
+            $head['SystemId'] = $header['SYSTEM_ID'];
+            $head['Credential']['ProfileId'] = $header['PROFILE_ID'];
+            $head['Credential']['Securitycode'] = $header['SECURITY_CODE'];
         }
 
-        $controller = new BaseController();
+        $this->_controller = new BaseController();
 
-        $this->_content = $controller->prepareContent($content);
-        $this->_head = $controller->prepareHead($head);
+        $this->_content = $this->_controller->prepareContent($content);
+        $this->_head = $this->_controller->prepareHead($head);
 
-        $this->_rb = new RatePAY\RequestBuilder(true);
+        $this->_rb = new RatePAY\RequestBuilder($header['SANDBOX']);
 
     }
 
@@ -88,7 +91,7 @@ class PaymentController extends Controller
                     $this->_callPaymentConfirm();
             }
 
-            return $paymentRequest->getResponseRaw();
+            return $this->_controller->prepareResponse($paymentRequest, 'payment');
         }
     }
 
@@ -104,7 +107,7 @@ class PaymentController extends Controller
         }
 
         $paymentConfirm = $this->_rb->callPaymentConfirm($this->_head);
-        return $paymentConfirm->getResponseRaw();
+        return $this->_controller->prepareResponse($paymentConfirm, 'payment');
     }
 
     /**
@@ -115,7 +118,7 @@ class PaymentController extends Controller
     private function _callConfirmationDeliver()
     {
         $confirmationDeliver = $this->_rb->callConfirmationDeliver($this->_head, $this->_content);
-        return $confirmationDeliver->getResponseRaw();
+        return $this->_controller->prepareResponse($confirmationDeliver, 'payment');
     }
 
     /**
@@ -126,7 +129,7 @@ class PaymentController extends Controller
     private function _callPaymentChange()
     {
         $paymentChange = $this->_rb->callPaymentChange($this->_head, $this->_content)->subtype($this->_options['operation']);
-        return $paymentChange->getResponseRaw();
+        return $this->_controller->prepareResponse($paymentChange, 'payment');
     }
 
     /**
@@ -137,7 +140,7 @@ class PaymentController extends Controller
     private function _callPaymentDiscount()
     {
         $paymentChange = $this->_rb->callPaymentChange($this->_head, $this->_content)->subtype($this->_options['operation']);
-        return $paymentChange->getResponseRaw();
+        return $this->_controller->prepareResponse($paymentChange, 'payment');
     }
 
 }

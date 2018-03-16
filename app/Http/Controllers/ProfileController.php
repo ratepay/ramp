@@ -20,15 +20,21 @@ class ProfileController extends Controller
         $mbHead = new RatePAY\ModelBuilder();
 
         $mbHead->setArray([
-            'SystemId' => "Example",
+            'SystemId' => $header['SYSTEM_ID'],
             'Credential' => [
-                'ProfileId' => $header['PROFILE'],
-                'Securitycode' => $header['SECURITY']
+                'ProfileId' => $header['PROFILE_ID'],
+                'Securitycode' => $header['SECURITY_CODE']
             ]
         ]);
 
-        $rb = new RatePAY\RequestBuilder(true);
+        $rb = new RatePAY\RequestBuilder($header['SANDBOX']);
         $profileRequest = $rb->callProfileRequest($mbHead);
-        return $profileRequest->getResult();
+
+        if ($profileRequest->isSuccessful()) {
+            return $profileRequest->getResult();
+        } else {
+            return "ProfileRequest not successful";
+        }
+
     }
 }

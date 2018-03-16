@@ -56,6 +56,44 @@ class BaseController extends Controller
     }
 
     /**
+     * @param object $sdk
+     * @return string
+     */
+    public function prepareResponse($sdk, $type) {
+        $response = array();
+
+        $response['successful'] = $sdk->isSuccessful();
+        $response['reason_code'] = $sdk->getReasonCode();
+        $response['reason_message'] = $sdk->getReasonMessage();
+
+        switch ($type) {
+            case 'payment':
+                $response['transaction_id'] = $sdk->getTransactionId();
+                $response['customer_message'] = $sdk->getCustomerMessage();
+                $response['retry_admitted'] = $sdk->isRetryAdmitted();
+                $response['descriptor'] = $sdk->getDescriptor();
+                break;
+            case 'installment':
+                $response['min_rate'] = $sdk->getMinRate();
+                $response['allowed_months'] = $sdk->getAllowedMonths();
+                break;
+            case 'calculator':
+                $response['payment_amount'] = $sdk->getPaymentAmount();
+                $response['installment_number'] = $sdk->getInstallmentNumber();
+                $response['installment_amount'] = $sdk->getInstallmentAmount();
+                $response['last_installment_amount'] = $sdk->getLastInstallmentAmount();
+                $response['interest_rate'] = $sdk->getInterestRate();
+                $response['payment_firstday'] = $sdk->getPaymentFirstday();
+                break;
+        }
+
+        $response['request'] = array($sdk->getRequestRaw());
+        $response['response'] = array($sdk->getResponseRaw());
+
+        return json_encode($response, JSON_UNESCAPED_SLASHES);
+    }
+
+    /**
      * @param $content
      * @return array $content
      */
