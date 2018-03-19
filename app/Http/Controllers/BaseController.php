@@ -40,18 +40,22 @@ class BaseController extends Controller
         $content = $this->_changeKeyFormat($content);
         $mbContent = new RatePAY\ModelBuilder('Content');
 
-        if (is_array($content['ShoppingBasket']['Items'])) {
-            foreach ($content['ShoppingBasket']['Items'] AS $item) {
-                $basketItems[] = array('Item' => $item);
+        if (!empty($content['ShoppingBasket']['Items'])) {
+            if (is_array($content['ShoppingBasket']['Items'])) {
+                foreach ($content['ShoppingBasket']['Items'] AS $item) {
+                    $basketItems[] = array('Item' => $item);
+                }
+                $content['ShoppingBasket']['Items'] = $basketItems;
             }
-            $content['ShoppingBasket']['Items'] = $basketItems;
         }
 
-        if (is_array($content['Customer']['Addresses'])) {
-            foreach ($content['Customer']['Addresses'] AS $address) {
-                $addresses[] = array('Address' => $address);
+        if (!empty($content['Customer'])) {
+            if (is_array($content['Customer']['Addresses'])) {
+                foreach ($content['Customer']['Addresses'] AS $address) {
+                    $addresses[] = array('Address' => $address);
+                }
+                $content['Customer']['Addresses'] = $addresses;
             }
-            $content['Customer']['Addresses'] = $addresses;
         }
 
         $mbContent->setArray($content);
@@ -77,16 +81,20 @@ class BaseController extends Controller
                 $response['descriptor'] = $sdk->getDescriptor();
                 break;
             case 'installment':
-                $response['min_rate'] = $sdk->getMinRate();
-                $response['allowed_months'] = $sdk->getAllowedMonths();
+                if ($sdk->isSuccessful()) {
+                    $response['min_rate'] = $sdk->getMinRate();
+                    $response['allowed_months'] = $sdk->getAllowedMonths();
+                }
                 break;
             case 'calculator':
-                $response['payment_amount'] = $sdk->getPaymentAmount();
-                $response['installment_number'] = $sdk->getInstallmentNumber();
-                $response['installment_amount'] = $sdk->getInstallmentAmount();
-                $response['last_installment_amount'] = $sdk->getLastInstallmentAmount();
-                $response['interest_rate'] = $sdk->getInterestRate();
-                $response['payment_firstday'] = $sdk->getPaymentFirstday();
+                if ($sdk->isSuccessful()) {
+                    $response['payment_amount'] = $sdk->getPaymentAmount();
+                    $response['installment_number'] = $sdk->getInstallmentNumber();
+                    $response['installment_amount'] = $sdk->getInstallmentAmount();
+                    $response['last_installment_amount'] = $sdk->getLastInstallmentAmount();
+                    $response['interest_rate'] = $sdk->getInterestRate();
+                    $response['payment_firstday'] = $sdk->getPaymentFirstday();
+                }
                 break;
         }
 

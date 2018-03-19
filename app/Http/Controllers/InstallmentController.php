@@ -23,8 +23,11 @@ class InstallmentController extends Controller
 
     var $_controller;
 
+    var $_options;
+
     public function __construct(Request $request)
     {
+        $this->_options = $request->json('options');
         $head = $request->json('head');
         $content = $request->json('content');
 
@@ -61,20 +64,9 @@ class InstallmentController extends Controller
      *
      * @return mixed
      */
-    public function callCalculationByTime()
+    public function callCalculation()
     {
-        $calculationRequest = $this->_rb->callCalculationRequest($this->_head, $this->_content)->subtype('calculation-by-time');
-        return $this->_controller->prepareResponse($calculationRequest, 'calculator');
-    }
-
-    /**
-     * calculation by rate
-     *
-     * @return mixed
-     */
-    public function callCalculationByRate()
-    {
-        $calculationRequest = $this->_rb->callCalculationRequest($this->_head, $this->_content)->subtype('calculation-by-time');
+        $calculationRequest = $this->_rb->callCalculationRequest($this->_head, $this->_content)->subtype($this->_options['operation']);
         return $this->_controller->prepareResponse($calculationRequest, 'calculator');
     }
 }

@@ -114,7 +114,7 @@ class PaymentController extends Controller
     private function _callConfirmationDeliver()
     {
         $confirmationDeliver = $this->_rb->callConfirmationDeliver($this->_head, $this->_content);
-        return $this->_controller->prepareResponse($confirmationDeliver, 'payment');
+        return $this->_controller->prepareResponse($confirmationDeliver, 'paymentdeliver');
     }
 
     /**
@@ -125,7 +125,7 @@ class PaymentController extends Controller
     private function _callPaymentChange()
     {
         $paymentChange = $this->_rb->callPaymentChange($this->_head, $this->_content)->subtype($this->_options['operation']);
-        return $this->_controller->prepareResponse($paymentChange, 'payment');
+        return $this->_controller->prepareResponse($paymentChange, 'paymentchange');
     }
 
     /**
@@ -136,7 +136,7 @@ class PaymentController extends Controller
     private function _callPaymentDiscount()
     {
         $paymentChange = $this->_rb->callPaymentChange($this->_head, $this->_content)->subtype($this->_options['operation']);
-        return $this->_controller->prepareResponse($paymentChange, 'payment');
+        return $this->_controller->prepareResponse($paymentChange, 'paymentcredit');
     }
 
 }

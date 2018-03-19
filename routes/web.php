@@ -14,4 +14,6 @@ $router->get('profile', 'ProfileController@getProfile');
 
 $router->get('installment', 'installmentController@getConfiguration');
 
+$router->post('installment', 'installmentController@callCalculation');
+
 $router->post('trx', 'PaymentController@prepareRequest');
