@@ -10,9 +10,8 @@
 | and give it the Closure to call when that URI is requested.
 |
 */
+$router->get('profile', 'ProfileController@getProfile');
 
-$router->get('profile/{profile}/{security}', 'ProfileController@getProfile');
-
-$router->get('installment/{profile}/{security}', 'installmentController@getConfiguration');
+$router->get('installment', 'installmentController@getConfiguration');
 
 $router->post('trx', 'PaymentController@prepareRequest');

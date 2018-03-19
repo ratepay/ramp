@@ -31,9 +31,12 @@ class BaseController extends Controller
      * prepare content
      *
      * @param array $content
-     * @return object
+     * @return mixed
      */
     public function prepareContent($content) {
+        if (empty($content)) {
+            return '';
+        }
         $content = $this->_changeKeyFormat($content);
         $mbContent = new RatePAY\ModelBuilder('Content');
 

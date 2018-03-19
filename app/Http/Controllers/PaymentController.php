@@ -21,15 +21,13 @@ class PaymentController extends Controller
 
     var $_controller;
 
-    public function __construct(Request $request, $transactionId = null)
+    var $_headArray;
+
+    public function __construct(Request $request)
     {
         $this->_options = $request->json('options');
         $head = $request->json('head');
         $content = $request->json('content');
-
-        if (!empty($transactionId)) {
-            $head['TransactionId'] = $transactionId;
-        }
 
         $header = $request->server->getHeaders();
         if (!empty($header['PROFILE_ID'])) {
@@ -39,6 +37,8 @@ class PaymentController extends Controller
         }
 
         $this->_controller = new BaseController();
+
+        $this->_headArray = $head;
 
         $this->_content = $this->_controller->prepareContent($content);
         $this->_head = $this->_controller->prepareHead($head);
@@ -83,16 +83,16 @@ class PaymentController extends Controller
     private function _callPaymentRequest()
     {
         $paymentRequest = $this->_rb->callPaymentRequest($this->_head, $this->_content);
+        $head = $this->_headArray;
+        $response = $this->_controller->prepareResponse($paymentRequest, 'payment');
 
-        if ($paymentRequest->isSuccessful()) {
-            $this->_trx = $paymentRequest->getTransactionId();
-
-            if (isset($head['External']['OrderId'])) {
-                    $this->_callPaymentConfirm();
-            }
-
-            return $this->_controller->prepareResponse($paymentRequest, 'payment');
+        if ($paymentRequest->isSuccessful() && !empty($head['external']['order_id'])) {
+            $head['transaction_id'] = $paymentRequest->getTransactionId();
+            $this->_head = $this->_controller->prepareHead($head);
+            $this->_callPaymentConfirm();
         }
+
+        return $response;
     }
 
     /**
@@ -102,12 +102,8 @@ class PaymentController extends Controller
      */
     private function _callPaymentConfirm()
     {
-        if (!empty($this->_trx)) {
-            $head['TransactionId'] = $this->_trx;
-        }
-
         $paymentConfirm = $this->_rb->callPaymentConfirm($this->_head);
-        return $this->_controller->prepareResponse($paymentConfirm, 'payment');
+        return $this->_controller->prepareResponse($paymentConfirm, 'paymentconfirm');
     }
 
     /**
