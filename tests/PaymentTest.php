@@ -33,7 +33,7 @@ class PaymentTest extends TestCase
 
     /**
      * negative test for payment request
-     *
+     */
     public function testNegativePaymentRequest()
     {
         $this->json('POST', 'trx', $this->getNegativePaymentRequest(), $this->_positive_header)
