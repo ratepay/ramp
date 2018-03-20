@@ -27,7 +27,7 @@ class PaymentTest extends TestCase
      */
     public function testPositivePaymentRequest()
     {
-        $this->json('POST', 'trx', $this->getPositivePaymentRequest(), $this->_positive_header)
+        $this->json('POST', 'trx/', $this->getPositivePaymentRequest(), $this->_positive_header)
              ->seeJson(["successful" => true, "reason_message" => "Request successful"]);
     }
 
@@ -36,7 +36,7 @@ class PaymentTest extends TestCase
      */
     public function testNegativePaymentRequest()
     {
-        $this->json('POST', 'trx', $this->getNegativePaymentRequest(), $this->_positive_header)
+        $this->json('POST', 'trx/', $this->getNegativePaymentRequest(), $this->_positive_header)
              ->seeJson(["successful" => false, "reason_message" => "Request not successful"]);
     }
 
@@ -46,17 +46,16 @@ class PaymentTest extends TestCase
     public function testPositivePaymentRequestConfirm()
     {
         $data = $this->getPositivePaymentRequest();
-        $this->json('POST', 'trx', $data, $this->_positive_header);
+        $this->json('POST', 'trx/', $data, $this->_positive_header);
         $res = $this->response->getContent();
 
         $res = json_decode($res, true);
 
         $data['head']['external']['order_id'] = 'A12345';
         $data['options']['operation'] = 'confirm';
-        $data['head']['transaction_id'] = $res['transaction_id'];
         unset($data['customer']);
 
-        $this->json('POST', 'trx', $data, $this->_positive_header)
+        $this->json('PUT', 'trx/' . $res['transaction_id'], $data, $this->_positive_header)
              ->seeJson(["successful" => true, "reason_code" => 303,"reason_message" =>"No RMS reason code"]);
     }
 
@@ -84,10 +83,9 @@ class PaymentTest extends TestCase
         $res = json_decode($res, true);
 
         $data['options']['operation'] = 'delivery';
-        $data['head']['transaction_id'] = $res['transaction_id'];
         unset($data['content']['customer']);
 
-        $this->json('POST', 'trx', $data, $this->_positive_header)
+        $this->json('PUT', 'trx/' . $res['transaction_id'], $data, $this->_positive_header)
              ->seeJson(["successful" => true, "reason_code" => 303,"reason_message" =>"No RMS reason code"]);
     }
 
@@ -103,10 +101,9 @@ class PaymentTest extends TestCase
         $res = json_decode($res, true);
 
         $data['options']['operation'] = 'delivery';
-        $data['head']['transaction_id'] = $res['transaction_id'] . 1;
         unset($data['content']['customer']);
 
-        $this->json('POST', 'trx', $data, $this->_positive_header)
+        $this->json('PUT', 'trx/' . $res['transaction_id'] . 1, $data, $this->_positive_header)
              ->seeJson(["successful" => false, "reason_code" =>100, "reason_message" => "Internal server error: There is no regular TransactionId for the ProfileId "]);
     }
 
@@ -125,7 +122,7 @@ class PaymentTest extends TestCase
         $data['head']['transaction_id'] = $res['transaction_id'];
         unset($data['content']['customer']);
 
-        $this->json('POST', 'trx', $data, $this->_positive_header)
+        $this->json('PUT', 'trx/' . $res['transaction_id'], $data, $this->_positive_header)
             ->seeJson(["successful" => true, "reason_code" => 700, "reason_message" => "Request successful"]);
     }
 
@@ -141,10 +138,9 @@ class PaymentTest extends TestCase
         $res = json_decode($res, true);
 
         $data['options']['operation'] = 'cancellation';
-        $data['head']['transaction_id'] = $res['transaction_id'] . 1;
         unset($data['content']['customer']);
 
-        $this->json('POST', 'trx', $data, $this->_positive_header)
+        $this->json('PUT', 'trx/' . $res['transaction_id'] . 1, $data, $this->_positive_header)
             ->seeJson(["successful" => false, "reason_code" =>100, "reason_message" => "Internal server error: There is no regular TransactionId for the ProfileId "]);
     }
 
@@ -161,13 +157,12 @@ class PaymentTest extends TestCase
 
         $data['head']['external']['order_id'] = 'A12345';
         $data['options']['operation'] = 'delivery';
-        $data['head']['transaction_id'] = $res['transaction_id'] . 1;
         unset($data['customer']);
 
-        $this->json('POST', 'trx', $data, $this->_positive_header);
+        $this->json('PUT', 'trx/' . $res['transaction_id'], $data, $this->_positive_header);
 
         $data['options']['operation'] = 'return';
-        $this->json('POST', 'trx', $data, $this->_positive_header)
+        $this->json('PUT', 'trx/' . $res['transaction_id'] . 1, $data, $this->_positive_header)
             ->seeJson(["successful" => false, "reason_code" =>100, "reason_message" => "Internal server error: There is no regular TransactionId for the ProfileId "]);
     }
 
@@ -183,13 +178,12 @@ class PaymentTest extends TestCase
         $res = json_decode($res, true);
 
         $data['options']['operation'] = 'delivery';
-        $data['head']['transaction_id'] = $res['transaction_id'];
         unset($data['content']['customer']);
 
-        $this->json('POST', 'trx', $data, $this->_positive_header);
+        $this->json('PUT', 'trx/' . $res['transaction_id'], $data, $this->_positive_header);
 
         $data['options']['operation'] = 'return';
-        $this->json('POST', 'trx', $data, $this->_positive_header)
+        $this->json('PUT', 'trx/' . $res['transaction_id'], $data, $this->_positive_header)
             ->seeJson(["successful" => true, "reason_code" => 700,"reason_message" => "Request successful"]);
     }
 
@@ -206,10 +200,9 @@ class PaymentTest extends TestCase
         $res = json_decode($res, true);
 
         $data['options']['operation'] = 'delivery';
-        $data['head']['transaction_id'] = $res['transaction_id'];
         unset($data['content']['customer']);
 
-        $this->json('POST', 'trx', $data, $this->_positive_header);
+        $this->json('PUT', 'trx/' . $res['transaction_id'], $data, $this->_positive_header);
 
         unset($data['content']['shopping_basket']['items']);
         unset($data['content']['shopping_basket']['shipping']);
@@ -217,7 +210,7 @@ class PaymentTest extends TestCase
                                                                 'unit_price_gross' => -20,
                                                                 'tax_rate' => 19);
         $data['options']['operation'] = 'credit';
-        $this->json('POST', 'trx', $data, $this->_positive_header)
+        $this->json('PUT', 'trx/' . $res['transaction_id'], $data, $this->_positive_header)
              ->seeJson(["successful" => true, "reason_code" => 700,"reason_message" => "Request successful"]);
     }
 
@@ -237,7 +230,7 @@ class PaymentTest extends TestCase
         $data['head']['transaction_id'] = $res['transaction_id'];
         unset($data['content']['customer']);
 
-        $this->json('POST', 'trx', $data, $this->_positive_header);
+        $this->json('PUT', 'trx/' . $res['transaction_id'], $data, $this->_positive_header);
 
         unset($data['content']['shopping_basket']['items']);
         unset($data['content']['shopping_basket']['shipping']);
@@ -245,8 +238,7 @@ class PaymentTest extends TestCase
                                                                 'unit_price_gross' => -20,
                                                                 'tax_rate' => 19);
         $data['options']['operation'] = 'credit';
-        $data['head']['transaction_id'] = $res['transaction_id'] . 1;
-        $this->json('POST', 'trx', $data, $this->_positive_header)
+        $this->json('PUT', 'trx/' . $res['transaction_id'] . 1, $data, $this->_positive_header)
             ->seeJson(["successful" => false, "reason_code" =>100]);
     }
 

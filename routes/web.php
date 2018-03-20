@@ -17,3 +17,5 @@ $router->get('installment', 'installmentController@getConfiguration');
 $router->post('installment', 'installmentController@callCalculation');
 
 $router->post('trx', 'PaymentController@prepareRequest');
+
+$router->put('trx/{transactionId}', 'PaymentController@prepareRequest');

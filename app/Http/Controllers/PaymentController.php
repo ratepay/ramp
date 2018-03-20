@@ -23,11 +23,13 @@ class PaymentController extends Controller
 
     var $_headArray;
 
+    var $_sandbox;
+
     public function __construct(Request $request)
     {
         $this->_options = $request->json('options');
         $head = $request->json('head');
-        $content = $request->json('content');
+        $this->_content = $request->json('content');
 
         $header = $request->server->getHeaders();
         if (!empty($header['PROFILE_ID'])) {
@@ -35,25 +37,31 @@ class PaymentController extends Controller
             $head['Credential']['ProfileId'] = $header['PROFILE_ID'];
             $head['Credential']['Securitycode'] = $header['SECURITY_CODE'];
         }
-
-        $this->_controller = new BaseController();
-
+        $this->_head = $head;
         $this->_headArray = $head;
-
-        $this->_content = $this->_controller->prepareContent($content);
-        $this->_head = $this->_controller->prepareHead($head);
-
-        $this->_rb = new RatePAY\RequestBuilder($header['SANDBOX']);
-
+        $this->_sandbox = $header['SANDBOX'];
     }
 
     /**
      * prepare requests
      *
+     * @param $transactionId
      * @return mixed
      */
-    public function prepareRequest()
+    public function prepareRequest($transactionId = null)
     {
+        $head = $this->_head;
+        if (!empty($transactionId)) {
+            $head['transaction_id'] = $transactionId;
+        }
+
+        $this->_controller = new BaseController();
+
+        $this->_content = $this->_controller->prepareContent($this->_content);
+        $this->_head = $this->_controller->prepareHead($head);
+
+        $this->_rb = new RatePAY\RequestBuilder($this->_sandbox);
+
         switch ($this->_options['operation']) {
             case 'purchase':
                 return $this->_callPaymentRequest();
