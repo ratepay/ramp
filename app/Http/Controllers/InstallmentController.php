@@ -66,7 +66,12 @@ class InstallmentController extends Controller
      */
     public function callCalculation()
     {
-        $calculationRequest = $this->_rb->callCalculationRequest($this->_head, $this->_content)->subtype($this->_options['operation']);
+        $operation = "calculation-by-time";
+        if ($this->_options['operation'] == 'calculation_by_rate') {
+            $operation = "calculation-by-rate";
+        }
+
+        $calculationRequest = $this->_rb->callCalculationRequest($this->_head, $this->_content)->subtype($operation);
         return $this->_controller->prepareResponse($calculationRequest, 'calculator');
     }
 }

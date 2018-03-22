@@ -86,7 +86,7 @@ class InstallmentTest extends TestCase
     {
         $json = "{
                     \"options\":{
-                        \"operation\":\"calculation-by-time\"
+                        \"operation\":\"calculation_by_time\"
                     },
                     \"content\":{
                         \"installment_calculation\":{
@@ -104,7 +104,7 @@ class InstallmentTest extends TestCase
     {
         $json = "{
                     \"options\":{
-                        \"operation\":\"calculation-by-rate\"
+                        \"operation\":\"calculation_by_rate\"
                     },
                     \"content\":{
                         \"installment_calculation\":{

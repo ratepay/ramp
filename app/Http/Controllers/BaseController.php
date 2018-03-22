@@ -104,8 +104,8 @@ class BaseController extends Controller
                 break;
         }
 
-        $response['request'] = array($sdk->getRequestRaw());
-        $response['response'] = array($sdk->getResponseRaw());
+        $response['request_raw'] = array($sdk->getRequestRaw());
+        $response['response_raw'] = array($sdk->getResponseRaw());
 
         return json_encode($response, JSON_UNESCAPED_SLASHES);
     }

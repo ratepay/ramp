@@ -62,6 +62,19 @@ class PaymentController extends Controller
 
         $this->_rb = new RatePAY\RequestBuilder($this->_sandbox);
 
+        if (!empty($this->_options['connection_timeout'])) {
+            $this->_rb->setConnectionTimeout($this->_options['connection_timeout']);
+        }
+        if (!empty($this->_options['execution_timeout'])) {
+            $this->_rb->setConnectionTimeout($this->_options['execution_timeout']);
+        }
+        if (!empty($this->_options['connection_retries'])) {
+            $this->_rb->setConnectionTimeout($this->_options['connection_retries']);
+        }
+        if (!empty($this->_options['retry_delay'])) {
+            $this->_rb->setConnectionTimeout($this->_options['retry_delay']);
+        }
+
         switch ($this->_options['operation']) {
             case 'payment_request':
                 return $this->_callPaymentRequest();
