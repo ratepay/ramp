@@ -41,11 +41,24 @@ class InstallmentController extends Controller
         $this->_controller = new BaseController();
 
         $this->_head = $this->_controller->prepareHead($head);
+
+        $this->_rb = new RatePAY\RequestBuilder($header['SANDBOX']);
+
         if (!empty($content)) {
             $this->_content = $this->_controller->prepareContent($content);
         }
-
-        $this->_rb = new RatePAY\RequestBuilder($header['SANDBOX']);
+        if (!empty($this->_options['connection_timeout'])) {
+            $this->_rb->setConnectionTimeout($this->_options['connection_timeout']);
+        }
+        if (!empty($this->_options['execution_timeout'])) {
+            $this->_rb->setConnectionTimeout($this->_options['execution_timeout']);
+        }
+        if (!empty($this->_options['connection_retries'])) {
+            $this->_rb->setConnectionTimeout($this->_options['connection_retries']);
+        }
+        if (!empty($this->_options['retry_delay'])) {
+            $this->_rb->setConnectionTimeout($this->_options['retry_delay']);
+        }
     }
 
     /**
