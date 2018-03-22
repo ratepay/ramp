@@ -52,7 +52,7 @@ class PaymentTest extends TestCase
         $res = json_decode($res, true);
 
         $data['head']['external']['order_id'] = 'A12345';
-        $data['options']['operation'] = 'confirm';
+        $data['options']['operation'] = 'payment_confirm';
         unset($data['customer']);
 
         $this->json('PUT', 'trx/' . $res['transaction_id'], $data, $this->_positive_header)
@@ -82,7 +82,7 @@ class PaymentTest extends TestCase
 
         $res = json_decode($res, true);
 
-        $data['options']['operation'] = 'delivery';
+        $data['options']['operation'] = 'confirmation_deliver';
         unset($data['content']['customer']);
 
         $this->json('PUT', 'trx/' . $res['transaction_id'], $data, $this->_positive_header)
@@ -100,7 +100,7 @@ class PaymentTest extends TestCase
 
         $res = json_decode($res, true);
 
-        $data['options']['operation'] = 'delivery';
+        $data['options']['operation'] = 'confirmation_deliver';
         unset($data['content']['customer']);
 
         $this->json('PUT', 'trx/' . $res['transaction_id'] . 1, $data, $this->_positive_header)
@@ -156,7 +156,7 @@ class PaymentTest extends TestCase
         $res = json_decode($res, true);
 
         $data['head']['external']['order_id'] = 'A12345';
-        $data['options']['operation'] = 'delivery';
+        $data['options']['operation'] = 'confirmation_deliver';
         unset($data['customer']);
 
         $this->json('PUT', 'trx/' . $res['transaction_id'], $data, $this->_positive_header);
@@ -177,7 +177,7 @@ class PaymentTest extends TestCase
         $res = $this->response->getContent();
         $res = json_decode($res, true);
 
-        $data['options']['operation'] = 'delivery';
+        $data['options']['operation'] = 'confirmation_deliver';
         unset($data['content']['customer']);
 
         $this->json('PUT', 'trx/' . $res['transaction_id'], $data, $this->_positive_header);
@@ -199,7 +199,7 @@ class PaymentTest extends TestCase
 
         $res = json_decode($res, true);
 
-        $data['options']['operation'] = 'delivery';
+        $data['options']['operation'] = 'confirmation_deliver';
         unset($data['content']['customer']);
 
         $this->json('PUT', 'trx/' . $res['transaction_id'], $data, $this->_positive_header);
@@ -226,7 +226,7 @@ class PaymentTest extends TestCase
 
         $res = json_decode($res, true);
 
-        $data['options']['operation'] = 'delivery';
+        $data['options']['operation'] = 'confirmation_deliver';
         $data['head']['transaction_id'] = $res['transaction_id'];
         unset($data['content']['customer']);
 
@@ -246,7 +246,7 @@ class PaymentTest extends TestCase
     {
         $data =  "{
                 \"options\":{
-                    \"operation\":\"purchase\"
+                    \"operation\":\"payment_request\"
                 },
                 \"content\":{
                 \"customer\":{

@@ -63,13 +63,13 @@ class PaymentController extends Controller
         $this->_rb = new RatePAY\RequestBuilder($this->_sandbox);
 
         switch ($this->_options['operation']) {
-            case 'purchase':
+            case 'payment_request':
                 return $this->_callPaymentRequest();
                 break;
-            case 'confirm':
+            case 'payment_confirm':
                 return $this->_callPaymentConfirm();
                 break;
-            case 'delivery':
+            case 'confirmation_deliver':
                 return $this->_callConfirmationDeliver();
                 break;
             case 'return':

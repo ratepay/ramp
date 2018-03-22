@@ -35,6 +35,6 @@ class ProfileTest extends TestCase
     public function testNegativeProfile()
     {
         $this->get('/profile', $this->_negative_header)
-             ->assertEquals("ProfileRequest not successful", $this->response->getContent());
+            ->seeJson(["successful" => false, "reason_message" => "Authentication failed"]);
     }
 }

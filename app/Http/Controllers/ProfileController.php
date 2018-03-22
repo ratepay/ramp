@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Laravel\Lumen\Routing\Controller as Controller;
 use RatePAY;
+use App\Http\Controllers\BaseController as BaseController;
 
 class ProfileController extends Controller
 {
@@ -30,11 +31,7 @@ class ProfileController extends Controller
         $rb = new RatePAY\RequestBuilder($header['SANDBOX']);
         $profileRequest = $rb->callProfileRequest($mbHead);
 
-        if ($profileRequest->isSuccessful()) {
-            return $profileRequest->getResult();
-        } else {
-            return "ProfileRequest not successful";
-        }
-
+        $controller = new BaseController();
+        return $controller->prepareResponse($profileRequest, 'profile');
     }
 }

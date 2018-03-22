@@ -11,15 +11,27 @@ RAMP is a PHP Microservice for the RatePAY API
 
 ## Installation
 
+Composer is required
+
+1. Create a Lumen Project
+````bash
+composer create-project --prefer-dist laravel/lumen ramp
+````
+
+2. Add Ratepay Library
 Update Composer
 ````bash
-composer update
+composer require ratepay/php-library
 ````
-Copy all files into the lumen directory
+
+3. Clone Ramp Project
+4. Replace Lumen files by files within RAMP folder
 
 ## Changelog
+## Version 1.0.0 Released 2018-03-31
+* add Testing
 
-## Version 0.9.1 Released 2018-01-10
+## Version 0.9.1 Released 2018-03-20
 * RAMP
 
 

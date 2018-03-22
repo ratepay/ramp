@@ -72,6 +72,12 @@ class BaseController extends Controller
         $response['successful'] = $sdk->isSuccessful();
         $response['reason_code'] = $sdk->getReasonCode();
         $response['reason_message'] = $sdk->getReasonMessage();
+        $response['response_time'] = $sdk->getResponseTime();
+        $response['status_code'] = $sdk->getStatusCode();
+        $response['status_message'] = $sdk->getStatusMessage();
+        $response['result_code'] = $sdk->getResultCode();
+        $response['result_message'] = $sdk->getResultMessage();
+        $response['result'] = $sdk->getResult();
 
         switch ($type) {
             case 'payment':
