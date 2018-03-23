@@ -27,7 +27,6 @@ class ProfileTest extends TestCase
 
     public function testPositiveProfile()
     {
-
         $this->get('/profile', $this->_positive_header)
              ->seeJson(["name" => "DEV_1.8_DE"]);
     }
@@ -36,5 +35,23 @@ class ProfileTest extends TestCase
     {
         $this->get('/profile', $this->_negative_header)
             ->seeJson(["successful" => false, "reason_message" => "Authentication failed"]);
+    }
+
+    public function testPositiveLogging()
+    {
+        $this->_positive_header['logging'] = true;
+
+        $this->get('/profile', $this->_positive_header);
+        $data = json_decode($this->response->getContent(), true);
+
+        $this->assertArrayHasKey('request_raw', $data);
+    }
+
+    public function testNegativeLogging()
+    {
+        $this->_positive_header['logging'] = false;
+        $this->get('/profile', $this->_positive_header);
+        $data = json_decode($this->response->getContent(), true);
+        $this->assertArrayNotHasKey('request_raw', $data);
     }
 }
