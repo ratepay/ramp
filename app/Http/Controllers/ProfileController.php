@@ -32,6 +32,9 @@ class ProfileController extends Controller
         $profileRequest = $rb->callProfileRequest($mbHead);
 
         $controller = new BaseController();
+        if (!empty($header['LOGGING'])) {
+            $controller->setLogging($header['LOGGING']);
+        }
         return $controller->prepareResponse($profileRequest, 'profile');
     }
 }

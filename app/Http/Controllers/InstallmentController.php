@@ -59,6 +59,9 @@ class InstallmentController extends Controller
         if (!empty($this->_options['retry_delay'])) {
             $this->_rb->setConnectionTimeout($this->_options['retry_delay']);
         }
+        if (!empty($header['LOGGING'])) {
+            $this->_controller->setLogging($header['LOGGING']);
+        }
     }
 
     /**

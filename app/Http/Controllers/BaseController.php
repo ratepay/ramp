@@ -13,6 +13,7 @@ use RatePAY;
 
 class BaseController extends Controller
 {
+    var $_logging = false;
 
     /**
      * prepare head
@@ -63,6 +64,16 @@ class BaseController extends Controller
     }
 
     /**
+     * set logging option
+     *
+     * @param $logging
+     */
+    public function setLogging($logging)
+    {
+        $this->_logging = $logging;
+    }
+
+    /**
      * @param object $sdk
      * @return string
      */
@@ -77,14 +88,14 @@ class BaseController extends Controller
         $response['status_message'] = $sdk->getStatusMessage();
         $response['result_code'] = $sdk->getResultCode();
         $response['result_message'] = $sdk->getResultMessage();
-        $response['result'] = $sdk->getResult();
+        $response['result'] = $this->_prepareResult($sdk->getResult());
 
         switch ($type) {
             case 'payment':
                 $response['transaction_id'] = $sdk->getTransactionId();
                 $response['customer_message'] = $sdk->getCustomerMessage();
-                $response['retry_admitted'] = $sdk->isRetryAdmitted();
                 $response['descriptor'] = $sdk->getDescriptor();
+                $response['retry_admitted'] = $sdk->isRetryAdmitted();
                 break;
             case 'installment':
                 if ($sdk->isSuccessful()) {
@@ -104,10 +115,34 @@ class BaseController extends Controller
                 break;
         }
 
-        $response['request_raw'] = array($sdk->getRequestRaw());
-        $response['response_raw'] = array($sdk->getResponseRaw());
+        if ($this->_logging == true) {
+            $response['request_raw'] = array($sdk->getRequestRaw());
+            $response['response_raw'] = array($sdk->getResponseRaw());
+        }
 
         return json_encode($response, JSON_UNESCAPED_SLASHES);
+    }
+
+    /**
+     * prepare result
+     *
+     * @param $result
+     * @return array
+     */
+    private function _prepareResult($result)
+    {
+        if (!empty($result)) {
+            foreach ($result AS $key => $value) {
+                if (is_array($value)) {
+                    $value = $this->_prepareResult($value);
+                }
+                unset($result[$key]);
+                $key = str_replace('-', '_', $key);
+
+                $result[$key] = $value;
+            }
+        }
+        return $result;
     }
 
     /**
