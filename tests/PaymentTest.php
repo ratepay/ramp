@@ -242,6 +242,41 @@ class PaymentTest extends TestCase
             ->seeJson(["successful" => false, "reason_code" =>100]);
     }
 
+    /**
+     * positive test for change order
+     */
+    public function testPositiveChange()
+    {
+        $data = $this->getPositivePaymentRequest();
+        $this->json('POST', 'trx', $data, $this->_positive_header);
+        $res = $this->response->getContent();
+
+        $res = json_decode($res, true);
+        $data['head']['transaction_id'] = $res['transaction_id'];
+
+        $this->json('PUT', 'trx/' . $res['transaction_id'], $this->_getChangeOrder(), $this->_positive_header)
+            ->seeJson(["successful" => true, "reason_code" => 700, "reason_message" => "Request successful"]);
+    }
+
+    /**
+     * negative test for change order
+     */
+    public function testNegativeChange()
+    {
+        $data = $this->getPositivePaymentRequest();
+        $this->json('POST', 'trx', $data, $this->_positive_header);
+        $res = $this->response->getContent();
+
+        $res = json_decode($res, true);
+        $data['head']['transaction_id'] = $res['transaction_id'];
+
+        $data['options']['operation'] = 'change_order';
+        unset($data['content']['customer']);
+
+        $this->json('PUT', 'trx/' . $res['transaction_id'] . 1, $this->_getChangeOrder(), $this->_positive_header)
+            ->seeJson(["successful" => false, "reason_code" =>100, "reason_message" => "Internal server error: There is no regular TransactionId for the ProfileId "]);
+    }
+
     private function getNegativePaymentRequest()
     {
         $data =  "{
@@ -321,6 +356,29 @@ class PaymentTest extends TestCase
         $data = $this->getNegativePaymentRequest();
         $data['content']['customer']['last_name'] = 'Nobody';
         return $data;
+    }
+
+    private function _getChangeOrder()
+    {
+        $data =  "{
+                \"options\":{
+                    \"operation\":\"change_order\"
+                },
+                \"content\":{
+                    \"shopping_basket\":{
+                        \"items\":[
+                            {
+                                \"description\":\"Change Product \",
+                                \"article_number\":\"Change 123\",
+                                \"quantity\":\"1\",
+                                \"unit_price_gross\":\"100\",
+                                \"tax_rate\":\"19\"
+                            }
+                        ]
+                    }
+                }
+            }";
+        return json_decode($data, true);
     }
 
 }
