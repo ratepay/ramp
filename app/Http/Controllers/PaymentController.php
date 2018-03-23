@@ -75,6 +75,11 @@ class PaymentController extends Controller
             $this->_rb->setConnectionTimeout($this->_options['retry_delay']);
         }
 
+        $header = $this->_headArray;
+        if (!empty($header['LOGGING'])) {
+            $this->_controller->setLogging($header['LOGGING']);
+        }
+
         switch ($this->_options['operation']) {
             case 'payment_request':
                 return $this->_callPaymentRequest();
@@ -87,6 +92,7 @@ class PaymentController extends Controller
                 break;
             case 'return':
             case 'cancellation':
+            case 'change_order':
                 return $this->_callPaymentChange();
                 break;
             case 'credit':
@@ -145,6 +151,9 @@ class PaymentController extends Controller
      */
     private function _callPaymentChange()
     {
+        if ($this->_options['operation'] == 'change_order') {
+            $this->_options['operation'] = 'change-order';
+        }
         $paymentChange = $this->_rb->callPaymentChange($this->_head, $this->_content)->subtype($this->_options['operation']);
         return $this->_controller->prepareResponse($paymentChange, 'paymentchange');
     }
