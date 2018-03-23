@@ -4,10 +4,12 @@
 
 RAMP is a PHP microservice for the RatePAY API
 
-| Author | `Annegret Seufert`
-| Version | `1.0.0`
-| Link | `http://www.ratepay.com`
-| Mail | `integration@ratepay.com`
+|Module | RatePAY RAMP 
+|------|----------
+|Author | `Annegret Seufert`
+|Version | `1.0.0`
+|Link | `http://www.ratepay.com`
+|Mail | `integration@ratepay.com`
 
 ## Installation
 
