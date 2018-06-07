@@ -20,14 +20,14 @@ Composer is required
 composer create-project --prefer-dist laravel/lumen ramp
 ````
 
-2. Add Ratepay library
+2. Go to the ramp folder and add Ratepay library
 
 ````bash
 composer require ratepay/php-library
 ````
 
 3. Clone RAMP repository
-4. Replace Lumen files by files within RAMP folder
+4. Merge Lumen files by files within RAMP folder
 
 ## Changelog
 ## Version 1.0.0 Released 2018-03-22
