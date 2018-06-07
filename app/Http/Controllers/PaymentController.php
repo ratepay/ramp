@@ -31,14 +31,16 @@ class PaymentController extends Controller
         $head = $request->json('head');
         $this->_content = $request->json('content');
 
+
         $header = $request->server->getHeaders();
         if (!empty($header['PROFILE_ID'])) {
             $head['SystemId'] = $header['SYSTEM_ID'];
             $head['Credential']['ProfileId'] = $header['PROFILE_ID'];
             $head['Credential']['Securitycode'] = $header['SECURITY_CODE'];
         }
+
         $this->_head = $head;
-        $this->_headArray = $head;
+        $this->_headArray = $header;
         $this->_sandbox = $header['SANDBOX'];
     }
 
@@ -154,6 +156,7 @@ class PaymentController extends Controller
         if ($this->_options['operation'] == 'change_order') {
             $this->_options['operation'] = 'change-order';
         }
+
         $paymentChange = $this->_rb->callPaymentChange($this->_head, $this->_content)->subtype($this->_options['operation']);
         return $this->_controller->prepareResponse($paymentChange, 'paymentchange');
     }

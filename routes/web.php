@@ -16,9 +16,9 @@ $router->get('/', function () use ($router) {
 
 $router->get('profile', 'ProfileController@getProfile');
 
-$router->get('installment', 'installmentController@getConfiguration');
+$router->get('installment', 'InstallmentController@getConfiguration');
 
-$router->post('installment', 'installmentController@callCalculation');
+$router->post('installment', 'InstallmentController@callCalculation');
 
 $router->post('trx', 'PaymentController@prepareRequest');
 
