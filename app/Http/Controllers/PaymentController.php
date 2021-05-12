@@ -41,7 +41,7 @@ class PaymentController extends Controller
 
         $this->_head = $head;
         $this->_headArray = $header;
-        $this->_sandbox = $header['SANDBOX'];
+        $this->_sandbox = filter_var($header['SANDBOX'], FILTER_VALIDATE_BOOLEAN);
     }
 
     /**
@@ -79,7 +79,7 @@ class PaymentController extends Controller
 
         $header = $this->_headArray;
         if (!empty($header['LOGGING'])) {
-            $this->_controller->setLogging($header['LOGGING']);
+            $this->_controller->setLogging(filter_var($header['LOGGING'], FILTER_VALIDATE_BOOLEAN));
         }
 
         switch ($this->_options['operation']) {
