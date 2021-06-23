@@ -28,12 +28,12 @@ class ProfileController extends Controller
             ]
         ]);
 
-        $rb = new RatePAY\RequestBuilder($header['SANDBOX']);
+        $rb = new RatePAY\RequestBuilder(filter_var($header['SANDBOX'], FILTER_VALIDATE_BOOLEAN));
         $profileRequest = $rb->callProfileRequest($mbHead);
 
         $controller = new BaseController();
         if (!empty($header['LOGGING'])) {
-            $controller->setLogging($header['LOGGING']);
+            $controller->setLogging(filter_var($header['LOGGING'], FILTER_VALIDATE_BOOLEAN));
         }
         return $controller->prepareResponse($profileRequest, 'profile');
     }

@@ -42,7 +42,7 @@ class InstallmentController extends Controller
 
         $this->_head = $this->_controller->prepareHead($head);
 
-        $this->_rb = new RatePAY\RequestBuilder($header['SANDBOX']);
+        $this->_rb = new RatePAY\RequestBuilder(filter_var($header['SANDBOX'], FILTER_VALIDATE_BOOLEAN));
 
         if (!empty($content)) {
             $this->_content = $this->_controller->prepareContent($content);
@@ -60,7 +60,7 @@ class InstallmentController extends Controller
             $this->_rb->setConnectionTimeout($this->_options['retry_delay']);
         }
         if (!empty($header['LOGGING'])) {
-            $this->_controller->setLogging($header['LOGGING']);
+            $this->_controller->setLogging(filter_var($header['LOGGING'], FILTER_VALIDATE_BOOLEAN));
         }
     }
 
